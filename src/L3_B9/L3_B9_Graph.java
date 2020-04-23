@@ -11,9 +11,13 @@ import java.util.Scanner;
 public class L3_B9_Graph {
     private int nombreDeSommets;
     private int nombredArcs;
-    private ArrayList<L3_B9_Arc> list = new ArrayList<L3_B9_Arc>();
+    private ArrayList<L3_B9_Arc> list;
     private int[][] matriceAdjacence;
     private int[][] matriceValeurs;
+
+    public L3_B9_Graph() {
+        list  = new ArrayList<>();
+    }
 
     public void setNombreDeSommets(int nombreDeSommets) {
         this.nombreDeSommets = nombreDeSommets;
