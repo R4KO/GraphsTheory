@@ -16,7 +16,7 @@ public class L3_B9_Graph {
     private int[][] matriceValeurs;
 
     public L3_B9_Graph() {
-        list  = new ArrayList<>();
+    list  = new ArrayList<>();
     }
 
     public void setNombreDeSommets(int nombreDeSommets) {
@@ -91,6 +91,58 @@ public class L3_B9_Graph {
         }
     }
 
+    public boolean detectCircuit() {
+        boolean predecesseur; // Check a predecessor
+        boolean end = true; // Initialisé à true au cas où aucun sommet est supprimé
+        ArrayList<Integer> sommetsSupprimes = new ArrayList<>();
+
+        while (end){
+            end = false;
+            for (int i = 0; i < nombreDeSommets; i++) {
+                predecesseur = false; // initialisation de la variable
+                for (int j = 0; j < nombreDeSommets; j++) {
+                    if (matriceAdjacence[j][i] == 1 || sommetsSupprimes.contains(i)) {
+                        predecesseur = true;
+                    }
+                }
+                if (!predecesseur) {
+                    // pas de prédecesseur donc suppression
+                    System.out.println("Le sommet " + i + " n'a pas de prédecesseur");
+                    System.out.println("suppression...");
+                    sommetsSupprimes.add(i);
+                    end = true;
+                }
+            }
+
+            for (int i = 0; i < nombreDeSommets; i++) {
+                for (int j : sommetsSupprimes) {
+                    if (j == i) {
+                        for (int k = 0; k < nombreDeSommets; k++) {
+                            matriceAdjacence[i][k] = 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (sommetsSupprimes.size() == nombreDeSommets) {
+            // Aucun sommet supprimés
+            System.out.println("Pas de circuit");
+            return false;
+        }
+
+        System.out.println("Sommets restants:");
+        for (int i = 0; i < nombreDeSommets; i++) {
+            if(!sommetsSupprimes.contains(i)) {
+                System.out.print(i + " ");
+            }
+        }
+        System.out.println();
+        
+        System.out.println("Il y a au moins un circuit");
+        return true;
+    }
+
     @Override
     public String toString() {
         String output = "";
@@ -145,7 +197,7 @@ public class L3_B9_Graph {
             g1.printMatriceValeurs();
 
             // Détection de circuit
-
+            g1.detectCircuit();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
