@@ -56,10 +56,18 @@ public class L3_B9_Main {
             if (!circuit) {
                 System.out.println("Le graphe " + number + " ne contient pas de circuit");
                 g1.calculRangs();
+                // Vérifier l'ordonnancement
+                boolean ordonnancement = g1.checkOrdonnancement();
+
+                if (ordonnancement) {
+
+                }
+            }
+            else {
+                System.out.println("Il y a au moins un circuit");
+                System.out.println("Ce n'est pas un graphe d'ordonnancement");
             }
 
-            // Vérifier l'ordonnancement
-            boolean ordonnancement = g1.checkOrdonnancement();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

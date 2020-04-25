@@ -151,8 +151,7 @@ public class L3_B9_Graph {
             }
         }
         System.out.println();
-        
-        System.out.println("Il y a au moins un circuit");
+
         return true;
     }
 
@@ -235,7 +234,7 @@ public class L3_B9_Graph {
         // Vérifier présence de valeurs négatives
         for (L3_B9_Arc a : listArcs) {
             if (a.getValeur() < 0) {
-                System.out.println(a.getOrigine() + " -> " + a.getDestination() + " = " + a.getValeur());
+                System.out.println("Dans l'arc " + a.getOrigine() + " -> " + a.getDestination() + " = " + a.getValeur());
                 System.out.println("La valeur est négative.");
                 System.out.println("Ce graphe ne peut pas être un graphe d'ordonnancement.");
                 return false;
@@ -284,13 +283,15 @@ public class L3_B9_Graph {
             return false;
         }
 
+        System.out.println("Il y a un point d'entrée et de sortie unique");
+
         //Les différents arcs d'un sommets doivent avoir la même valeur
         ArrayList<Integer> valeursArc = new ArrayList<>();
 
         for (int i = 0; i < nombredArcs; i++) {
             for (L3_B9_Arc a : listArcs) {
                 if (a.getOrigine() == i) { // Si l'origine match le sommet courant
-                    valeursArc.add(a.getValeur()); // On récupère la valeur du sommet
+                    valeursArc.add(a.getValeur()); // Stockage de la valeur du sommet
                 }
             }
 
@@ -302,8 +303,9 @@ public class L3_B9_Graph {
                     return false;
                 }
             }
-            valeursArc.clear();
+            valeursArc.clear(); // Clear avant de stocker d'autres valeurs d'arcs
         }
+        System.out.println("La valeur des arcs sortants d'un même sommet sont les mêmes");
 
         // Vérifier la nullité des valeurs sortants du sommet d'entrée
         for (L3_B9_Arc a : listArcs) {
@@ -317,6 +319,7 @@ public class L3_B9_Graph {
                 }
             }
         }
+        System.out.println("Les sommets sortants du sommet d'entrée ont une valeur nulle");
 
         // Si tous les tests sont passés
         System.out.println("C'est un graphe d'ordonnancement");
