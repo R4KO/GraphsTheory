@@ -2,6 +2,7 @@ import L3_B9.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class L3_B9_Main {
@@ -58,10 +59,6 @@ public class L3_B9_Main {
                 g1.calculRangs();
                 // Vérifier l'ordonnancement
                 boolean ordonnancement = g1.checkOrdonnancement();
-
-                if (ordonnancement) {
-
-                }
             }
             else {
                 System.out.println("Il y a au moins un circuit");
