@@ -12,12 +12,16 @@ public class L3_B9_Graph {
     private int nombredArcs;
     public ArrayList<L3_B9_Arc> listArcs;
     private TreeMap<Integer, Integer> rangs;
+    private TreeMap<Integer, Integer> DAPTo; // Date au plus tôt
+    private TreeMap<Integer, Integer> DAPTa; // Date au plus tard
     private int[][] matriceAdjacence;
     private int[][] matriceValeurs;
 
     public L3_B9_Graph() {
         listArcs  = new ArrayList<>();
         rangs = new TreeMap<>();
+        DAPTo = new TreeMap<>();
+        DAPTa = new TreeMap<>();
     }
 
     public void setNombreDeSommets(int nombreDeSommets) {
@@ -64,7 +68,7 @@ public class L3_B9_Graph {
         matriceValeurs = new int[nombreDeSommets][nombreDeSommets];
         for (int i = 0; i < nombreDeSommets; i++)
             for (int j = 0; j < nombreDeSommets; j++)
-                matriceValeurs[i][j] = -1;
+                matriceValeurs[i][j] = Integer.MAX_VALUE;
 
         for (L3_B9_Arc a : listArcs) {
             matriceValeurs[a.getOrigine()][a.getDestination()] = a.getValeur();
@@ -82,7 +86,7 @@ public class L3_B9_Graph {
         for (int i = 0; i < nombreDeSommets; i++) {
             System.out.print(i + "\t");
             for (int j = 0; j < nombreDeSommets; j++) {
-                if (matriceValeurs[i][j] == -1) {
+                if (matriceValeurs[i][j] == Integer.MAX_VALUE) {
                     System.out.print("*\t");
                 } else {
                     System.out.print(matriceValeurs[i][j] + "\t");
@@ -130,7 +134,7 @@ public class L3_B9_Graph {
         }
 
         if (sommetsSupprimes.size() == nombreDeSommets) {
-            // Aucun sommet supprimés
+            // Aucun sommet supprimé
             System.out.println("Pas de circuit");
             return false;
         }
@@ -213,6 +217,33 @@ public class L3_B9_Graph {
         System.out.print("Rang\t");
         printValues(rangs);
         System.out.println();
+    }
+
+
+    // Partie 2
+    public boolean checkOrdonnancement() {
+        // Vérifier présence de valeurs négatives
+        for (L3_B9_Arc a : listArcs) {
+            if (a.getValeur() < 0) {
+                System.out.println(a.getOrigine() + " -> " + a.getDestination() + " = " + a.getValeur());
+                System.out.println("La valeur est négative.");
+                System.out.println("Ce graphe ne peut pas être un graphe d'ordonnancement.");
+                return false;
+            }
+        }
+
+        setMatriceAdjacence(); // Au cas où ça n'a pas été fait
+        // 1 point d'entrée et 1 point de sortie
+        for (int i = 0; i < nombreDeSommets; i++) {
+            for (int j = 0; j < nombreDeSommets; j++) {
+                if (matriceAdjacence[j][i] == 1) {
+
+                }
+            }
+        }
+
+
+
     }
 
     public static void printKeys(TreeMap t) {

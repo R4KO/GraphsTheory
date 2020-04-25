@@ -58,6 +58,9 @@ public class L3_B9_Main {
                 g1.calculRangs();
             }
 
+            // Vérifier l'ordonnancement
+            boolean ordonnancement = g1.checkOrdonnancement();
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
