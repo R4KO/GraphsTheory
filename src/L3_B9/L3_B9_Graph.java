@@ -5,18 +5,19 @@
 package L3_B9;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 public class L3_B9_Graph {
     private int nombreDeSommets;
     private int nombredArcs;
-    private ArrayList<L3_B9_Arc> list;
+    private ArrayList<L3_B9_Arc> listArcs;
+    private TreeMap<Integer, Integer> rangs;
     private int[][] matriceAdjacence;
     private int[][] matriceValeurs;
 
     public L3_B9_Graph() {
-    list  = new ArrayList<>();
+        listArcs  = new ArrayList<>();
+        rangs = new TreeMap<>();
     }
 
     public void setNombreDeSommets(int nombreDeSommets) {
@@ -37,7 +38,7 @@ public class L3_B9_Graph {
 
     private void setMatriceAdjacence() {
         matriceAdjacence = new int[nombreDeSommets][nombreDeSommets];
-        for (L3_B9_Arc a : list) {
+        for (L3_B9_Arc a : listArcs) {
             matriceAdjacence[a.getOrigine()][a.getDestination()] = 1;
         }
     }
@@ -65,7 +66,7 @@ public class L3_B9_Graph {
             for (int j = 0; j < nombreDeSommets; j++)
                 matriceValeurs[i][j] = -1;
 
-        for (L3_B9_Arc a : list) {
+        for (L3_B9_Arc a : listArcs) {
             matriceValeurs[a.getOrigine()][a.getDestination()] = a.getValeur();
         }
     }
@@ -96,6 +97,8 @@ public class L3_B9_Graph {
         boolean end = true; // Initialisé à true au cas où aucun sommet est supprimé
         ArrayList<Integer> sommetsSupprimes = new ArrayList<>();
 
+        setMatriceAdjacence(); // au cas où ça n'a pas été fait
+
         while (end){
             end = false;
             for (int i = 0; i < nombreDeSommets; i++) {
@@ -103,6 +106,7 @@ public class L3_B9_Graph {
                 for (int j = 0; j < nombreDeSommets; j++) {
                     if (matriceAdjacence[j][i] == 1 || sommetsSupprimes.contains(i)) {
                         predecesseur = true;
+                        break;
                     }
                 }
                 if (!predecesseur) {
@@ -143,23 +147,92 @@ public class L3_B9_Graph {
         return true;
     }
 
-    @Override
-    public String toString() {
-        String output = "";
-        output += nombreDeSommets + " sommets" + "\n"
-                + nombredArcs + " arcs";
-        return output;
+    public void calculRangs() {
+        int rang = 0;
+        boolean end = true; // Initialisé à true au cas où
+        boolean predecessor;
+        ArrayList<Integer> sommetsSupprimes = new ArrayList<>();
+
+        setMatriceAdjacence(); // Au cas où ça n'a pas été fait
+        System.out.println("* Méthode d'élimination des points d'entrée");
+
+        while (end) {
+            end = false; // au moins un tour de boucle
+
+            System.out.println("Rang courant = " + rang);
+            System.out.println("Point d'entrée : ");
+
+            for (int i = 0; i < nombreDeSommets; i++) {
+                predecessor = false; // initialisation de la variable
+                for (int j = 0; j < nombreDeSommets; j++) {
+                    if (matriceAdjacence[j][i] == 1 || rangs.containsKey(i)) {
+                        // prédecesseur
+                        predecessor = true;
+                        break;
+                    }
+                }
+                // Fin de test colonne
+                if (!predecessor) {
+                    // suppression
+                    System.out.println(i + " ");
+                    sommetsSupprimes.add(i);
+                    rangs.put(i, rang);
+                    end = true;
+                }
+            }
+
+            while (!sommetsSupprimes.isEmpty()) {
+                int lastValue = sommetsSupprimes.get(sommetsSupprimes.size() - 1);
+                for (int i = 0; i < nombreDeSommets; i++) {
+                    matriceAdjacence[lastValue][i] = 0;
+                }
+                sommetsSupprimes.remove((Integer) lastValue); // Confonds la valeur lastValue et l'index lastValue
+            }
+            rang++;
+        }
+
+        System.out.println("Graphe vide");
+        System.out.println("Rangs calculés");
+
+        /*
+        Set set = rangs.entrySet();
+        Iterator i = set.iterator();
+
+        while (i.hasNext()) {
+            Map.Entry me = (Map.Entry)i.next();
+            System.out.print(me.getKey() + ": ");
+            System.out.print(me.getValue() + "\t");
+        }
+        System.out.println();
+         */
+
+        System.out.print("Sommet\t");
+        printKeys(rangs);
+        System.out.println();
+
+        System.out.print("Rang\t");
+        printValues(rangs);
+        System.out.println();
     }
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int choix;
+    public static void printKeys(TreeMap t) {
+        Set set = t.entrySet();
+        Iterator i = set.iterator();
 
-        do {
-            System.out.print("Quel graphe voulez-vous traiter ? (0 pour quitter) ");
-            choix = sc.nextInt();
-            readGraph(choix);
-        } while (choix != 0);
+        while (i.hasNext()) {
+            Map.Entry me = (Map.Entry)i.next();
+            System.out.print(me.getKey() + "\t");
+        }
+    }
+
+    public static void printValues(TreeMap t) {
+        Set set = t.entrySet();
+        Iterator i = set.iterator();
+
+        while (i.hasNext()) {
+            Map.Entry me = (Map.Entry)i.next();
+            System.out.print(me.getValue() + "\t");
+        }
     }
 
     public static void readGraph(int number) {
@@ -185,7 +258,7 @@ public class L3_B9_Graph {
                 int destination =  sc.nextInt();
                 int valeur = sc.nextInt();
                 System.out.println(origine + " -> " + destination + " = " + valeur);
-                g1.list.add(new L3_B9_Arc(origine, destination, valeur));
+                g1.listArcs.add(new L3_B9_Arc(origine, destination, valeur));
             }
 
             // Affichage de la matrice d'adjacence
@@ -197,10 +270,34 @@ public class L3_B9_Graph {
             g1.printMatriceValeurs();
 
             // Détection de circuit
-            g1.detectCircuit();
+            boolean circuit = g1.detectCircuit();
+
+            if (!circuit) {
+                System.out.println("Le graphe " + number + " ne contient pas de circuit");
+                g1.calculRangs();
+            }
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public String toString() {
+        String output = "";
+        output += nombreDeSommets + " sommets" + "\n"
+                + nombredArcs + " arcs";
+        return output;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int choix;
+
+        do {
+            System.out.print("Quel graphe voulez-vous traiter ? (0 pour quitter) ");
+            choix = sc.nextInt();
+            readGraph(choix);
+        } while (choix != 0);
     }
 }
