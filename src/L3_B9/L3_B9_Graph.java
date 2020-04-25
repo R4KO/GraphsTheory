@@ -17,6 +17,10 @@ public class L3_B9_Graph {
     private int[][] matriceAdjacence;
     private int[][] matriceValeurs;
 
+    // pour l'ordonnancement
+    private int entree;
+    private int sortie;
+
     public L3_B9_Graph() {
         listArcs  = new ArrayList<>();
         rangs = new TreeMap<>();
@@ -76,7 +80,7 @@ public class L3_B9_Graph {
     }
 
     public void printMatriceValeurs() {
-        setMatriceValeurs();
+        setMatriceValeurs(); // Au cas où
 
         System.out.println("Matrice des valeurs");
         for (int i = 0; i < nombreDeSommets; i++) {
@@ -126,6 +130,7 @@ public class L3_B9_Graph {
                 for (int j : sommetsSupprimes) {
                     if (j == i) {
                         for (int k = 0; k < nombreDeSommets; k++) {
+                            // supprimmer l'adjacence pour éviter de boucler à l'infini
                             matriceAdjacence[i][k] = 0;
                         }
                     }
@@ -134,7 +139,7 @@ public class L3_B9_Graph {
         }
 
         if (sommetsSupprimes.size() == nombreDeSommets) {
-            // Aucun sommet supprimé
+            // Tous les sommets sont supprimés
             System.out.println("Pas de circuit");
             return false;
         }
@@ -222,6 +227,11 @@ public class L3_B9_Graph {
 
     // Partie 2
     public boolean checkOrdonnancement() {
+        boolean predecessor;
+        boolean successor;
+        int nombreEntree = 0;
+        int nombreSortie = 0;
+
         // Vérifier présence de valeurs négatives
         for (L3_B9_Arc a : listArcs) {
             if (a.getValeur() < 0) {
@@ -235,14 +245,82 @@ public class L3_B9_Graph {
         setMatriceAdjacence(); // Au cas où ça n'a pas été fait
         // 1 point d'entrée et 1 point de sortie
         for (int i = 0; i < nombreDeSommets; i++) {
+            // initialisation avant tour de boucle
+            predecessor = false;
+            successor = false;
             for (int j = 0; j < nombreDeSommets; j++) {
                 if (matriceAdjacence[j][i] == 1) {
+                    predecessor = true;
+                }
 
+                if (matriceAdjacence[i][j] == 1) {
+                    successor = true;
+                }
+            }
+
+            if (!predecessor) {
+                // point d'entrée
+                nombreEntree++;
+                entree = i;
+                DAPTo.put(entree, 0); // 0 car point d'entrée
+            }
+
+            if (!successor) {
+                // point de sortie
+                nombreSortie++;
+                sortie = i;
+            }
+        }
+
+        if (nombreEntree != 1) {
+            System.out.println("Sommet d'entrée non unique");
+            System.out.println("Il ne s'agit pas d'un graphe d'ordonnancement");
+            return false;
+        }
+
+        if (nombreSortie != 1) {
+            System.out.println("Sommet de sortie non unique");
+            System.out.println("Il ne s'agit pas d'un graphe d'ordonnancement");
+            return false;
+        }
+
+        //Les différents arcs d'un sommets doivent avoir la même valeur
+        ArrayList<Integer> valeursArc = new ArrayList<>();
+
+        for (int i = 0; i < nombredArcs; i++) {
+            for (L3_B9_Arc a : listArcs) {
+                if (a.getOrigine() == i) { // Si l'origine match le sommet courant
+                    valeursArc.add(a.getValeur()); // On récupère la valeur du sommet
+                }
+            }
+
+            // Comparaison des valeurs 2 à 2
+            for (int j = 0; j < valeursArc.size() - 1; j++) {
+                if (valeursArc.get(j) != valeursArc.get(j + 1)) {
+                    System.out.println("2 valeurs différentes pour un arc sortant du sommet " + i + " (" + valeursArc.get(j) + " et " + valeursArc.get(j + 1) + ")");
+                    System.out.println("Ce n'est pas un graphe d'ordonnancement");
+                    return false;
+                }
+            }
+            valeursArc.clear();
+        }
+
+        // Vérifier la nullité des valeurs sortants du sommet d'entrée
+        for (L3_B9_Arc a : listArcs) {
+            if (a.getOrigine() == entree) {
+                // On verifie la valeur des arcs qui ont comme origine l'entrée
+                if (a.getValeur() !=0) {
+                    System.out.println("L'arc " + a.getOrigine() + " -> " + a.getDestination() + " a comme valeur " + a.getValeur());
+                    System.out.println("Cette valeur est non nulle");
+                    System.out.println("Ce n'est pas un graphe d'ordonnancement");
+                    return false;
                 }
             }
         }
 
-
+        // Si tous les tests sont passés
+        System.out.println("C'est un graphe d'ordonnancement");
+        return true;
 
     }
 
